@@ -32,4 +32,4 @@ Simple single-file JavaScript library to break a video down into individual fram
 </script>
 ```
 
-Demo: https://jsbin.com/yafozociji/edit?html,output
+Demo: https://jsbin.com/rokuzabeqi/edit?html,output
