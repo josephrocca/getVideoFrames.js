@@ -27,6 +27,7 @@ export default function getVideoFrames(opts={}) {
       decoder.decode(chunk);
     },
     setStatus: function() {},
+    videoDecoder: decoder,
   });
 
   return onFinishPromise;
@@ -71,12 +72,14 @@ class MP4Demuxer {
   #onFinish = null;
   #setStatus = null;
   #file = null;
+  #videoDecoder = null;
 
-  constructor(uri, {onConfig, onChunk, onFinish, setStatus}) {
+  constructor(uri, {onConfig, onChunk, onFinish, setStatus, videoDecoder}) {
     this.#onConfig = onConfig;
     this.#onChunk = onChunk;
     this.#onFinish = onFinish;
     this.#setStatus = setStatus;
+    this.#videoDecoder = videoDecoder;
 
     // Configure an MP4Box File for demuxing.
     this.#file = MP4Box.createFile();
@@ -86,11 +89,10 @@ class MP4Demuxer {
 
     // Fetch the file and pipe the data through.
     const fileSink = new MP4FileSink(this.#file, setStatus);
-    fetch(uri).then(async (response) => {
+    fetch(uri).then(response => {
       // highWaterMark should be large enough for smooth streaming, but lower is
       // better for memory usage.
-      await response.body.pipeTo(new WritableStream(fileSink, {highWaterMark: 2}));
-      if(this.#onFinish) this.#onFinish();
+      response.body.pipeTo(new WritableStream(fileSink, {highWaterMark: 2}));
     });
   }
 
@@ -129,7 +131,7 @@ class MP4Demuxer {
     this.#file.start();
   }
 
-  #onSamples(track_id, ref, samples) {
+  async #onSamples(track_id, ref, samples) {
     // Generate and emit an EncodedVideoChunk for each demuxed sample.
     for (const sample of samples) {
       this.#onChunk(new EncodedVideoChunk({
@@ -139,8 +141,11 @@ class MP4Demuxer {
         data: sample.data
       }));
     }
+    await this.#videoDecoder.flush();
+    if(this.#onFinish) this.#onFinish();
   }
 }
+
 
 
 /*! mp4box 23-09-2022 */
