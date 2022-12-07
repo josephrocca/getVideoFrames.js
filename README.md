@@ -1,7 +1,8 @@
-Simple single-file JavaScript library to break a video down into individual frames (uses WebCodecs API and MP4Box.js).
+Simple single-file JavaScript library to break a video down into individual frames.
 
  * Currently only supports mp4 files.
  * Check browser support: https://caniuse.com/webcodecs
+ * All credit for this code goes to authors of [official WebCodecs demos](https://w3c.github.io/webcodecs/samples/video-decode-display/) and of [mp4box.js](https://github.com/gpac/mp4box.js/).
 
 ### Usage
 ```js
