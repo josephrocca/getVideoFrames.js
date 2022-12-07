@@ -89,7 +89,8 @@ class MP4Demuxer {
     fetch(uri).then(response => {
       // highWaterMark should be large enough for smooth streaming, but lower is
       // better for memory usage.
-      response.body.pipeTo(new WritableStream(fileSink, {highWaterMark: 2}));
+      await response.body.pipeTo(new WritableStream(fileSink, {highWaterMark: 2}));
+      if(this.#onFinish) this.#onFinish();
     });
   }
 
@@ -138,7 +139,6 @@ class MP4Demuxer {
         data: sample.data
       }));
     }
-    if(this.#onFinish) this.#onFinish();
   }
 }
 
