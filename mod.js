@@ -60,10 +60,11 @@ class MP4FileSink {
 class MP4Demuxer {
   #onConfig = null;
   #onChunk = null;
+  #onFinish = null;
   #setStatus = null;
   #file = null;
 
-  constructor(uri, {onConfig, onChunk, setStatus}) {
+  constructor(uri, {onConfig, onChunk, onFinish, setStatus}) {
     this.#onConfig = onConfig;
     this.#onChunk = onChunk;
     this.#onFinish = onFinish;
