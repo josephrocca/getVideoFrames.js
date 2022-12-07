@@ -32,4 +32,4 @@ Simple JavaScript library to performantly and reliably break a video down into i
 </script>
 ```
 
-Demo: https://jsbin.com/rokuzabeqi/edit?html,output
+Demo: https://jsbin.com/mugoguxiha/edit?html,output
