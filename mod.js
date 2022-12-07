@@ -2,6 +2,9 @@
 // https://w3c.github.io/webcodecs/samples/video-decode-display/
 
 export default function getVideoFrames(opts={}) {
+  
+  let onFinishResolver;
+  let onFinishPromise = new Promise(r => onFinishResolver=r);
 
   const decoder = new VideoDecoder({
     output: opts.onFrame,
@@ -16,12 +19,17 @@ export default function getVideoFrames(opts={}) {
       if(opts.onConfig) opts.onConfig(config);
       decoder.configure(config);
     },
-    onFinish: opts.onFinish,
+    onFinish: function() {
+      if(opts.onFinish) opts.onFinish();
+      onFinishResolver();
+    }
     onChunk: function(chunk) {
       decoder.decode(chunk);
     },
     setStatus: function() {},
   });
+
+  return onFinishPromise;
 }
 
 // Wraps an MP4Box File as a WritableStream underlying sink.
