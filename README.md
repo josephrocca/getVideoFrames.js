@@ -8,7 +8,7 @@ Simple single-file JavaScript library to break a video down into individual fram
 ```js
 <canvas id="canvasEl"></canvas>
 <script type="module">
-  import getVideoFrames from "https://deno.land/x/get_video_frames@v0.0.4/mod.js"
+  import getVideoFrames from "https://deno.land/x/get_video_frames@v0.0.5/mod.js"
 
   let ctx = canvasEl.getContext("2d");
 
