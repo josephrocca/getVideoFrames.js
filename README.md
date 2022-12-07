@@ -32,4 +32,5 @@ Simple JavaScript library to performantly and reliably break a video down into i
 </script>
 ```
 
-Demo: https://jsbin.com/mugoguxiha/edit?html,output
+ * Simple demo: https://jsbin.com/mugoguxiha/edit?html,output
+ * Decode mp4 and re-encode as webm: https://josephrocca.github.io/createWebMFromFrames.js/demo/
