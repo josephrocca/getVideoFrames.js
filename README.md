@@ -1,4 +1,4 @@
-Simple single-file JavaScript library to break a video down into individual frames.
+Simple single-file JavaScript library to break a video down into individual frames using the new WebCodecs API.
 
  * Currently only supports mp4 files.
  * Check browser support: https://caniuse.com/webcodecs
@@ -6,17 +6,29 @@ Simple single-file JavaScript library to break a video down into individual fram
 
 ### Usage
 ```js
-import getVideoFrames from "https://deno.land/x/getVideoFrames@v0.0.1"
+<canvas id="canvasEl"></canvas>
+<script type="module">
+  import getVideoFrames from "https://deno.land/x/getVideoFrames@v0.0.1"
 
-// `getVideoFrames` expects a video URL.
-// If you have a file/blob instead of a videoUrl, turn it into a URL like this:
-let videoUrl = URL.createObjectURL(fileOrBlob);
+  let ctx = canvasEl.getContext("2d");
 
-for await (let frame of getVideoFrames(videoUrl)) {
-  // `frame` is a VideoFrame object
-  ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
-  frame.close();
-}
+  // `getVideoFrames` requires a video URL as input.
+  // If you have a file/blob instead of a videoUrl, turn it into a URL like this:
+  let videoUrl = URL.createObjectURL(fileOrBlob);
 
-URL.revokeObjectURL(fileOrBlob); // revoke URL to prevent memory leak
+  getVideoFrames({
+    videoUrl,
+    onFrame(frame) {  // `frame` is a VideoFrame object: https://developer.mozilla.org/en-US/docs/Web/API/VideoFrame
+      ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+      frame.close();
+    },
+    onConfig(config) {
+      canvasEl.width = config.codedWidth;
+      canvasEl.height = config.codedHeight;
+    },
+    onFinish() {
+      URL.revokeObjectURL(fileOrBlob); // revoke URL to prevent memory leak
+    },
+  });
+</script>
 ```
