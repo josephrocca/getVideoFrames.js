@@ -22,7 +22,7 @@ export default function getVideoFrames(opts={}) {
     onFinish: function() {
       if(opts.onFinish) opts.onFinish();
       onFinishResolver();
-    }
+    },
     onChunk: function(chunk) {
       decoder.decode(chunk);
     },
