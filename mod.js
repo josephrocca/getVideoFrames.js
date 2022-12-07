@@ -86,7 +86,7 @@ class MP4Demuxer {
 
     // Fetch the file and pipe the data through.
     const fileSink = new MP4FileSink(this.#file, setStatus);
-    fetch(uri).then(response => {
+    fetch(uri).then(async (response) => {
       // highWaterMark should be large enough for smooth streaming, but lower is
       // better for memory usage.
       await response.body.pipeTo(new WritableStream(fileSink, {highWaterMark: 2}));
