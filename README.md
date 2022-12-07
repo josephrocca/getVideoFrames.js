@@ -1,4 +1,4 @@
-Simple JavaScript library to performantly and reliably break a video down into individual frames using the new WebCodecs API.
+Simple JavaScript library to performantly and reliably break a video down into its individual frames using the new WebCodecs API.
 
  * Currently only supports mp4 files.
  * Check browser support: https://caniuse.com/webcodecs
