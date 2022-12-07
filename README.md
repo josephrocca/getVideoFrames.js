@@ -8,7 +8,7 @@ Simple JavaScript library to performantly and reliably break a video down into i
 ```js
 <canvas id="canvasEl"></canvas>
 <script type="module">
-  import getVideoFrames from "https://deno.land/x/get_video_frames@v0.0.5/mod.js"
+  import getVideoFrames from "https://deno.land/x/get_video_frames@v0.0.8/mod.js"
 
   let ctx = canvasEl.getContext("2d");
 
