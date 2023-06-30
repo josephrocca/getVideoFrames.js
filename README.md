@@ -12,6 +12,8 @@ Simple JavaScript library to performantly and reliably break a video down into i
 <script type="module">
   import getVideoFrames from "https://deno.land/x/get_video_frames@v0.0.9/mod.js"
   
+  let frameCount = 0;
+
   window.start = async function(file) {
     let ctx = canvasEl.getContext("2d"); 
 
@@ -24,6 +26,7 @@ Simple JavaScript library to performantly and reliably break a video down into i
       onFrame(frame) {  // `frame` is a VideoFrame object: https://developer.mozilla.org/en-US/docs/Web/API/VideoFrame
         ctx.drawImage(frame, 0, 0, canvasEl.width, canvasEl.height);
         frame.close();
+        frameCount++;
       },
       onConfig(config) {
         canvasEl.width = config.codedWidth;
@@ -31,13 +34,14 @@ Simple JavaScript library to performantly and reliably break a video down into i
       },
       onFinish() {
         console.log("finished!");
+        console.log("frameCount", frameCount);
       },
     });
-    
+
     URL.revokeObjectURL(file); // revoke URL to prevent memory leak
   }
 </script> 
 ```
 
- * Simple demo: https://jsbin.com/yimifadudo/edit?html,output
+ * Simple demo: https://jsbin.com/gehaqureca/edit?html,output
  * Decode mp4 and re-encode as webm: https://josephrocca.github.io/createWebMFromFrames.js/demo/
