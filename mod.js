@@ -9,6 +9,7 @@ export default function getVideoFrames(opts={}) {
   const decoder = new VideoDecoder({
     output: opts.onFrame,
     error: function(e) {
+      console.error(e);
       setStatus("decode", e);
     },
   });
@@ -26,42 +27,13 @@ export default function getVideoFrames(opts={}) {
     onChunk: function(chunk) {
       decoder.decode(chunk);
     },
-    setStatus: function() {},
+    setStatus: function(a, b) {
+      // console.log("status:", a, b);
+    },
     videoDecoder: decoder,
   });
 
   return onFinishPromise;
-}
-
-// Wraps an MP4Box File as a WritableStream underlying sink.
-class MP4FileSink {
-  #setStatus = null;
-  #file = null;
-  #offset = 0;
-
-  constructor(file, setStatus) {
-    this.#file = file;
-    this.#setStatus = setStatus;
-  }
-
-  write(chunk) {
-    // MP4Box.js requires buffers to be ArrayBuffers, but we have a Uint8Array.
-    const buffer = new ArrayBuffer(chunk.byteLength);
-    new Uint8Array(buffer).set(chunk);
-
-    // Inform MP4Box where in the file this chunk is from.
-    buffer.fileStart = this.#offset;
-    this.#offset += buffer.byteLength;
-
-    // Append chunk.
-    this.#setStatus("fetch", (this.#offset / (1024 ** 2)).toFixed(1) + " MiB");
-    this.#file.appendBuffer(buffer);
-  }
-
-  close() {
-    this.#setStatus("fetch", "Done");
-    this.#file.flush();
-  }
 }
 
 // Demuxes the first video track of an MP4 file using MP4Box, calling
@@ -83,16 +55,21 @@ class MP4Demuxer {
 
     // Configure an MP4Box File for demuxing.
     this.#file = MP4Box.createFile();
-    this.#file.onError = error => setStatus("demux", error);
+    this.#file.onError = error => {
+      console.error(error);
+      setStatus("demux", error);
+    }
     this.#file.onReady = this.#onReady.bind(this);
     this.#file.onSamples = this.#onSamples.bind(this);
 
     // Fetch the file and pipe the data through.
     const fileSink = new MP4FileSink(this.#file, setStatus);
-    fetch(uri).then(response => {
-      // highWaterMark should be large enough for smooth streaming, but lower is
-      // better for memory usage.
-      response.body.pipeTo(new WritableStream(fileSink, {highWaterMark: 2}));
+    fetch(uri).then(async response => {
+      // highWaterMark should be large enough for smooth streaming, but lower is better for memory usage.
+      await response.body.pipeTo(new WritableStream(fileSink, {highWaterMark: 2}));
+      
+      await this.#videoDecoder.flush();
+      if(this.#onFinish) this.#onFinish();
     });
   }
 
@@ -141,8 +118,38 @@ class MP4Demuxer {
         data: sample.data
       }));
     }
-    await this.#videoDecoder.flush();
-    if(this.#onFinish) this.#onFinish();
+  }
+}
+
+
+// Wraps an MP4Box File as a WritableStream underlying sink.
+class MP4FileSink {
+  #setStatus = null;
+  #file = null;
+  #offset = 0;
+
+  constructor(file, setStatus) {
+    this.#file = file;
+    this.#setStatus = setStatus;
+  }
+
+  write(chunk) {
+    // MP4Box.js requires buffers to be ArrayBuffers, but we have a Uint8Array.
+    const buffer = new ArrayBuffer(chunk.byteLength);
+    new Uint8Array(buffer).set(chunk);
+
+    // Inform MP4Box where in the file this chunk is from.
+    buffer.fileStart = this.#offset;
+    this.#offset += buffer.byteLength;
+
+    // Append chunk.
+    this.#setStatus("fetch", (this.#offset / (1024 ** 2)).toFixed(1) + " MiB");
+    this.#file.appendBuffer(buffer);
+  }
+
+  close() {
+    this.#setStatus("fetch", "Done");
+    this.#file.flush();
   }
 }
 
