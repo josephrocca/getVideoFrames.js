@@ -10,7 +10,7 @@ Simple JavaScript library to performantly and reliably break a video down into i
 <br>
 <input type="file" accept="video/mp4" onchange="start(this.files[0])">
 <script type="module">
-  import getVideoFrames from "https://deno.land/x/get_video_frames@v0.0.9/mod.js"
+  import getVideoFrames from "https://deno.land/x/get_video_frames@v0.0.10/mod.js"
   
   let frameCount = 0;
 
