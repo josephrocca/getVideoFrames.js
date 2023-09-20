@@ -101,7 +101,7 @@ class MP4Demuxer {
       codedHeight: track.video.height,
       codedWidth: track.video.width,
       description: this.#description(track),
-      mp4boxfile: this.#file,
+      mp4boxFile: this.#file,
     });
 
     // Start demuxing.
