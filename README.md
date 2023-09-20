@@ -36,6 +36,9 @@ Simple JavaScript library to performantly and reliably break a video down into i
         console.log("finished!");
         console.log("frameCount", frameCount);
       },
+      onReadyCallback(info){
+        console.log(info);
+      }
     });
 
     URL.revokeObjectURL(file); // revoke URL to prevent memory leak
