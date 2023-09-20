@@ -102,6 +102,7 @@ class MP4Demuxer {
       codedWidth: track.video.width,
       description: this.#description(track),
       mp4boxFile: this.#file,
+      info: info,
     });
 
     // Start demuxing.
